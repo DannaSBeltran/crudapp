@@ -1,0 +1,66 @@
+import mysql.connector
+from mysql.connector import Error
+from config import config
+
+def create_connection(config):
+    connection = None
+    try:
+        connection = mysql.connector.connect(**config)
+        print("Connection has been successful!")
+    except Error as e:
+        print(f"This error '{e}'  occured")
+    return connection
+
+mydb = mysql.connector.connect(
+    host='3.128.160.213',
+    user='studentsusbbog',
+    password='mami_prende_la_radi0',
+    database='libreria'
+)
+
+def create_autores(connection, autor_id, nombre, apellido, fecha_nacimiento):
+    cursor = connection.cursor()
+    query = "insert into autores (autor_id, nombre, apellido, fecha_nacimiento) values(%s,%s,%s,%s)"
+    cursor.execute(query,(autor_id, nombre, apellido, fecha_nacimiento))
+    connection.commit()
+    print(f"El nuevo escritor '{nombre}' ha sido ingresado.")
+
+def read_libros(connection):
+    cursor = connection.cursor()
+    query = "select * from libros"
+    cursor.execute(query)
+    return cursor.fetchall()
+
+def update_autores(connection, autor_id, nombre, apellido, fecha_nacimiento):
+    cursor = connection.cursor()
+    cursor.execute("UPDATE autores SET autor_id = %s, nombre = %s, apellido = %s, fecha_nacimiento = %s WHERE autor_id = %s",
+    (autor_id, nombre, apellido, fecha_nacimiento))
+    connection.commit()
+    print(f"El autor '{nombre}' ha sido actualizado con exito.")
+
+def delete_libro(connection, libro_id):
+    cursor = connection.cursor()
+    cursor.execute("DELETE FROM libros WHERE libro_id = %s", (libro_id,))
+    connection.commit()
+    print("El libro {libro_id} se elimino con exito}.")
+
+def main():
+    connection = create_connection(config)
+
+     #Crear un nuevo autor (cliente)
+    create_autores(connection, 7, 'Jorge Luis', 'Borges','1899')
+
+     #Leer a todos los libros
+    #libro = read_libros(connection)
+    #for nombre in libro:
+        #print(nombre)
+
+    # Actualizar datos de un autor
+    #print("Actualizacion de datos")
+    #update_autores (connection, 5, 'Jorge Luis', 'Borges', '1899')
+
+    # Eliminar libro
+   # delete_libro (connection, 3)
+
+if __name__ == "__main__":
+    main()
